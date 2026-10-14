@@ -10,7 +10,7 @@ Type a line in the serial console. It shows up on the DVI monitor over a scrolli
 
 - **Feather RP2350 with 8 MB PSRAM.** PicoTTS needs the PSRAM: its voice data alone is about 1.5 MB.
 - **DVI HSTX adapter** plugged into the Feather's HSTX connector, with a monitor that has speakers (or an audio out).
-- **CircuitPython from PR #11574**, which adds `board.DVI_AUDIO`. It isn't merged yet, so use the firmware `.uf2` from the [release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/latest).
+- **CircuitPython from PR #11574**, which adds DVI audio as `supervisor.runtime.audio`. It isn't merged yet, so use the firmware `.uf2` from the [release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/latest).
 - **`settings.toml`** with two lines: force DVI on, and use 320 wide to save RAM.
 - **A speech library:** PicoTTS (used by the demo) or Moonshine Klatt.
 - **A serial terminal** to type into the REPL console.
@@ -25,7 +25,7 @@ Built with `folder2uf2 --combine <firmware.uf2> --family-id 0xe48bff59 --flash-o
 
 ### 1. Flash the firmware
 
-Hold BOOT, tap RESET, and copy `adafruit-circuitpython-adafruit_feather_rp2350-en_US-20261014-main-PR11574-efa6511.uf2` from the [release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/latest) to the `RP2350` drive.
+Hold BOOT, tap RESET, and copy `adafruit-circuitpython-adafruit_feather_rp2350-en_US-20261014-PR11574-6ad3d7f.uf2` from the [release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/latest) to the `RP2350` drive.
 
 PR: https://github.com/adafruit/circuitpython/pull/11574
 
@@ -38,7 +38,7 @@ CIRCUITPY_PICODVI_ENABLE = "always"
 CIRCUITPY_DISPLAY_WIDTH = 320
 ```
 
-- `"always"` starts DVI even when the board can't read the monitor's EDID. Without it, `board.DVI_AUDIO` is `None`.
+- `"always"` starts DVI even when the board can't read the monitor's EDID. Without it, `supervisor.runtime.audio` is `None`.
 - At 640x480 there was only about 30 KB of heap left, and Klatt ran out of memory. 320 wide leaves plenty.
 
 ### 3. Install the libraries
@@ -54,7 +54,7 @@ Optional, the other engine we tried:
 
 ### 4. Copy code.py
 
-Copy `code.py` to `CIRCUITPY/`. If the board already has a display demo in `code.py`, replace it. On our board, the old one left `board.DVI_AUDIO` as `None`.
+Copy `code.py` to `CIRCUITPY/`. If the board already has a display demo in `code.py`, replace it. On our board, the old one left `supervisor.runtime.audio` as `None`.
 
 ### 5. Connect and type
 
@@ -68,8 +68,9 @@ You'll see `Type something to say:`. Press Enter if nothing shows up. Type a lin
 
 ## How the audio works
 
-- DVI audio only plays 48 kHz. PicoTTS renders at 16 kHz and Klatt at 22050 Hz.
-- Each script plays the speech into its own low-rate `audiomixer.Mixer`, then feeds that through `audiospeed.Resampler` into a 48 kHz mixer playing on `board.DVI_AUDIO`.
+- Audio comes from `supervisor.runtime.audio`, next to `supervisor.runtime.display`. Older builds of PR #11574 called it `board.DVI_AUDIO`; the [v1.0 release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/tag/v1.0) still has that firmware and matching scripts.
+- DVI audio only plays 48 kHz for now. The cable format allows other rates, but this firmware only supports 48 kHz. PicoTTS renders at 16 kHz and Klatt at 22050 Hz.
+- Each script plays the speech into its own low-rate `audiomixer.Mixer`, then feeds that through `audiospeed.Resampler` into a 48 kHz mixer playing on `supervisor.runtime.audio`.
 - `tts.volume = 0.5`. The default 1.0 sounded over-amplified.
 - The rainbow pauses while speech plays, because a full-screen redraw mid-sentence can starve the audio.
 
@@ -88,7 +89,7 @@ The two UF2 files are on the [release page](https://github.com/mikeysklar/feathe
 | File | What it is |
 |---|---|
 | `feather-rp2350-dvi-tts-demo-full.uf2` | Drop-in image: firmware + CIRCUITPY with code and libraries |
-| `adafruit-circuitpython-adafruit_feather_rp2350-en_US-20261014-main-PR11574-efa6511.uf2` | CircuitPython build from PR #11574 for the Feather RP2350 (firmware only) |
+| `adafruit-circuitpython-adafruit_feather_rp2350-en_US-20261014-PR11574-6ad3d7f.uf2` | CircuitPython build from PR #11574 for the Feather RP2350 (firmware only) |
 
 ## License
 

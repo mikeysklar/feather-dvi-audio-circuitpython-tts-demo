@@ -1,11 +1,10 @@
 # Type something in the serial console; it shows on the DVI screen and is spoken
-# through the DVI cable with PicoTTS. Needs a board with PSRAM and board.DVI_AUDIO.
+# through the DVI cable with PicoTTS. Needs a board with PSRAM and supervisor.runtime.audio.
 import sys
 import time
 
 import audiomixer
 import audiospeed
-import board
 import displayio
 import supervisor
 import terminalio
@@ -16,7 +15,7 @@ import adafruit_picotts as speech
 # Audio: PicoTTS renders at 16 kHz, DVI audio is 48 kHz, a Resampler joins them.
 fmt = dict(channel_count=1, bits_per_sample=16, samples_signed=True)
 out = audiomixer.Mixer(voice_count=1, buffer_size=4096, sample_rate=48000, **fmt)
-board.DVI_AUDIO.play(out)
+supervisor.runtime.audio.play(out)
 inner = audiomixer.Mixer(voice_count=1, buffer_size=4096, sample_rate=16000, **fmt)
 out.voice[0].play(audiospeed.Resampler(inner), loop=True)
 tts = speech.TTS(inner.voice[0])
