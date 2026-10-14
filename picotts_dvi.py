@@ -1,0 +1,32 @@
+# PicoTTS speech through board.DVI_AUDIO.
+# PicoTTS renders at 16000 Hz and DVI audio is 48 kHz only, so a Resampler sits between them.
+import gc
+import time
+
+import audiomixer
+import audiospeed
+import board
+
+import adafruit_picotts as speech
+
+fmt = dict(channel_count=1, bits_per_sample=16, samples_signed=True)
+out = audiomixer.Mixer(voice_count=1, buffer_size=2048, sample_rate=48000, **fmt)
+board.DVI_AUDIO.play(out)
+inner = audiomixer.Mixer(voice_count=1, buffer_size=1024, sample_rate=16000, **fmt)
+out.voice[0].play(audiospeed.Resampler(inner), loop=True)
+
+tts = speech.TTS(inner.voice[0])
+tts.volume = 0.5  # default 1.0 sounded over-amplified
+print("free", gc.mem_free())
+
+while True:
+    for text in (
+        "Hello from Circuit Python.",
+        "This is the S VOX Pico voice.",
+        "Dr. Smith read 1,234 pages on the 1st of May.",
+    ):
+        start = time.monotonic()
+        tts.say(text)
+        print(f"{text} {time.monotonic() - start:.2f} s")
+        time.sleep(1)
+    time.sleep(3)

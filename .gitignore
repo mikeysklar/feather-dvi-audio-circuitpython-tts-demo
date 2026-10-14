@@ -1,0 +1,5 @@
+*.uf2
+*.mp4
+*.zip
+firmware/
+.DS_Store
