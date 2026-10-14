@@ -17,7 +17,7 @@ Type a line in the serial console. It shows up on the DVI monitor over a scrolli
 
 ## Quick start (one file)
 
-`feather-rp2350-dvi-tts-demo-full.uf2` (in the [release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/latest)) holds the firmware plus a full CIRCUITPY drive: `code.py`, `settings.toml`, both example scripts, and the PicoTTS, Klatt and display_text libraries. Hold BOOT, tap RESET, and drag it onto the `RP2350` drive. **It replaces everything on CIRCUITPY.** Then skip to step 5.
+`feather-rp2350-dvi-tts-demo-full.uf2` (in the [release](https://github.com/mikeysklar/feather-dvi-audio-circuitpython-tts-demo/releases/latest)) holds the firmware plus a full CIRCUITPY drive: `code.py`, `settings.toml`, both example scripts, and the PicoTTS, Klatt, display_text and ticks libraries. Hold BOOT, tap RESET, and drag it onto the `RP2350` drive. **It replaces everything on CIRCUITPY.** Then skip to step 5.
 
 Built with `folder2uf2 --combine <firmware.uf2> --family-id 0xe48bff59 --flash-offset 0x100000 --flash-size 0x800000`.
 
@@ -46,7 +46,7 @@ CIRCUITPY_DISPLAY_WIDTH = 320
 Copy into `CIRCUITPY/lib/`:
 
 - `adafruit_picotts/` (the whole folder, including the `.bin` voice files and the `.mpy`) from https://github.com/adafruit/Adafruit_CircuitPython_PicoTTS
-- `adafruit_display_text/` from the CircuitPython library bundle (or `circup install adafruit_display_text`)
+- `adafruit_display_text/` and `adafruit_ticks.mpy` from the CircuitPython library bundle (or `circup install adafruit_display_text`, which pulls in `adafruit_ticks`)
 
 Optional, the other engine we tried:
 
